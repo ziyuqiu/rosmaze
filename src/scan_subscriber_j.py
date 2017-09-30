@@ -9,8 +9,9 @@ class ScanMonitor:
 
 	def scanCallback(self,msg):
 		#ranges contains 360 float measurements 
-		print("Range array has " + str(len(msg.ranges)) + " elements.")
-		print("Angle increement is " + str(msg.angle_increment))
+		print("Min Front: " + str(min(min(msg.ranges[350:359]),min(list(msg.ranges[0:10])))))
+		print("Min Left: " + str(min(msg.ranges[75:105])))
+		print("Min Right: " + str(min(msg.ranges[255:285])))
 
 	def start(self):
 		root = Tk()
