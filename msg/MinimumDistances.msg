@@ -1,0 +1,3 @@
+float32 min_front
+float32 min_left
+float32 min_right
