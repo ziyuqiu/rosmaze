@@ -12,15 +12,18 @@ class Mainloop:
 		self.sensor_topic = sensor_topic
 
 	def sensor_callback(msg):
-		self.front = msg.min_front
-		self.left = msg.min_left
-		self.right = msg.min_right
+		front = msg.min_front
+		left = msg.min_left
+		right = msg.min_right
+		if (left>=range || right >=range || front<= side):
+			evaluateIntersection()
+		else:
+			self.pub.publish(0)
 	
 	def evaluateIntersection(front,left,right):	
 		if (right >= range):
 			if (front >= range && left >= range):
-				self.pub.publish(4) #out
-				rospy.sleep()
+				self.pub.publish(4) #out	
 			else:
 				self.pub.publish(2) #rightturn
 			else if (front >= range):
@@ -31,7 +34,7 @@ class Mainloop:
 				self.pub.publish(3) #uturn
 
 	def start():
-		self.sub = rospy.Subscriber ('minimumDistances', MinimumDistances, sensor_callback)	
+		self.sub = rospy.Subscriber (self.sensor_topic, MinimumDistances, sensor_callback)	
 		#0: go straight
 		#1: leftturn
 		#2: rightturn
@@ -39,10 +42,7 @@ class Mainloop:
 		#4: out
 		self.pub = rospy.Publisher('instruction', Int32)
 		rospy.spin()
-		while not rospy.is_shutdown():
-			self.pub.publish(0)
-			if (self.left>=range || self.right >=range || self.front<= side):
-				evaluateIntersection()
+			
 def main():
 	rospy.init_node('instruction_publisher')
 	main_loop = Mainloop("minimumDistances")
