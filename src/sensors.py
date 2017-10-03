@@ -2,6 +2,7 @@
 import rospy
 from sensor_msgs.msg import LaserScan
 from rosmaze.msg import MinimumDistances
+import sys
 
 class Sensors:
 	def __init__(self, scan_topic):
@@ -38,11 +39,11 @@ class Sensors:
 		rospy.spin()
 
 def main():
-	robotid = str(sys.args[1])
+	robotid = str(sys.argv[1])
 	rospy.init_node('sensors')
 	
 	#if turtlebot, get sensor data from scan topic
-	if(robotid="tb"):
+	if(robotid=="tb"):
 		sensor_data = Sensors("scan")
 		sensor_data.start()
 	else:
