@@ -4,6 +4,7 @@ from time import sleep
 from geometry_msgs.msg import Twist
 from rosmaze.msg import MinimumDistances
 from math import pi
+from std_msgs.msg import Int32
 
 
 class Motors:
@@ -19,31 +20,58 @@ class Motors:
 	def __init__(self):
 		self.twist = Twist()
 		#make publisher
-		self.pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
+		self.pub = rospy.Publisher("/robot0/cmd_vel", Twist, queue_size=10)
 		#make subscriber
 		self.sub = rospy.Subscriber('minimumDistances',MinimumDistances, self.callBack)
+
+		#subscribe to commands
+		self.conmand_sub = rospy.Subscriber('instruction', Int32, self.command_call_back)
+
 		#initialize node
 		rospy.init_node('motor_controller')
 
-		self.turnRight()
+		self.lineFollowContinue = False
+
+		rospy.spin()
+
+
+	def command_call_back(self, x):
+		n = x.data
+		print("running command callback, command is " + str(x))
+		self.lineFollowContinue = (0 == x)
+		print("i'm getting to the psuedo-switch statement")
+		if(1 == n):
+			print("running case 1")
+			self.turnLeft()
+		elif(2==n):
+			self.turnRight()
+		elif(3==n):
+			self.turnLeft()
+			self.turnLeft()
+		elif(4==n):
+			self.turnLeft()
+			self.turnRight()
+
+
+
 
 
 	def turnLeft(self):
 		self.twist.linear.x = 0
 		self.twist.angular.z = pi / 2
 		self.pub.publish(self.twist)
+		sleep(1)
 		self.twist.linear.x = 0
 		self.twist.angular.z = 0
-		sleep(1)
 		self.pub.publish(self.twist)
 
 	def turnRight(self):
 		self.twist.linear.x = 0
 		self.twist.angular.z = -1*pi / 2
 		self.pub.publish(self.twist)
+		sleep(1)
 		self.twist.linear.x = 0
 		self.twist.angular.z = 0
-		sleep(1)
 		self.pub.publish(self.twist)
 
 	def goForward(self):
@@ -57,7 +85,7 @@ class Motors:
 
 	def lineFollow(self):
 		twist.linear.x = 0.2
-		while(lineFollowContinue()):
+		while(self.lineFollowContinue):
 			left_error = self.min_left - EXPECTED_WIDTH
 			right_error = EXPECTED_WIDTH - self.min_right
 			#ignore measurements if errors are too large, it means there's not a wall to track
@@ -80,30 +108,11 @@ class Motors:
 		self.min_right = msg.min_right
 
 
+def main():
+	m = Motors()
 
 
-m = Motors()
+if __name__ == '__main__':
+	main()
 
-while(True):
-	m.goForward()
-	m.goForward()
 
-	m.turnRight()
-	
-	m.goForward()
-	m.goForward()
-
-	m.turnRight()
-
-	m.goForward()
-	m.goForward()
-
-	m.turnLeft
-
-	m.goForward()
-	m.goForward()
-	m.goForward()
-	m.goForward()
-	m.goForward()
-	m.goForward()
-	sleep(5)

@@ -13,7 +13,7 @@ class Sensors:
 		min_front_val = min(min(msg.ranges[350:359]),min(list(msg.ranges[0:10])))
 
 		#if turtlebot, then have the opposite values since it increments angles in the opposite direction
-		if(self.scan_topic_name == "scan"):
+		if(self.scan_topic_name == "/robot0/laser_0"):
 			min_right_val = min(msg.ranges[75:105])
 			min_left_val = min(msg.ranges[255:285])
 		else:

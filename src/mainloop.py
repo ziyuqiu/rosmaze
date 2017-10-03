@@ -17,7 +17,7 @@ class Mainloop:
 		else:
 			self.pub.publish(0)
 	
-	def evaluateIntersection(front,left,right):	
+	def evaluateIntersection(self,front,left,right):	
 		if (right >= self.range):
 			if (front >= self.range and left >= self.range):
 				self.pub.publish(4) #out	
