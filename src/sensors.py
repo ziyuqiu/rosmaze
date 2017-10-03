@@ -10,8 +10,14 @@ class Sensors:
 	def scanCallback(self,msg):
 		#minimum values from front20 left30 right30 rays
 		min_front_val = min(min(msg.ranges[350:359]),min(list(msg.ranges[0:10])))
-		min_left_val = min(msg.ranges[75:105])
-		min_right_val = min(msg.ranges[255:285])
+
+		#if turtlebot, then have the opposite values since it increments angles in the opposite direction
+		if(self.scan_topic_name == "scan"):
+			min_right_val = min(msg.ranges[75:105])
+			min_left_val = min(msg.ranges[255:285])
+		else:
+			min_left_val = min(msg.ranges[75:105])
+			min_right_val = min(msg.ranges[255:285])
 
 		#print values to check in console
 		print("Min Front: " + str(min_front_val))
@@ -32,9 +38,20 @@ class Sensors:
 		rospy.spin()
 
 def main():
+	robotid = str(sys.args[1])
 	rospy.init_node('sensors')
-	sensor_data = Sensors("/robot0/laser_0")
-	sensor_data.start()
+	
+	#if turtlebot, get sensor data from scan topic
+	if(robotid="tb"):
+		sensor_data = Sensors("scan")
+		sensor_data.start()
+	else:
+		sensor_data = Sensors("/robot0/laser_0")
+		sensor_data.start()
+	
+	
 
 if __name__ == '__main__':
 	main()
+
+
