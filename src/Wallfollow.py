@@ -11,9 +11,16 @@ class Wallfollow:
 		self.pub_topic_name = pub_topic
 
 	def scanCallback(self,msg):
-		min_right_val = min(msg.ranges[70:110])
-		min_front_val = min(msg.ranges[160:200])
-		min_left_val = min(msg.ranges[250:290])
+		if(self.scan_topic_name == "scan"):
+			min_left_val = min(msg.ranges[70:110])
+			min_front_val = min(min(msg.ranges[340:359]),min(list(msg.ranges[0:20])))
+			min_right_val = min(msg.ranges[250:290])
+		else:
+			min_right_val = min(msg.ranges[70:110])
+			min_front_val = min(msg.ranges[160:200])
+			min_left_val = min(msg.ranges[250:290])
+		
+
 		t=Twist()
 		t.linear.x = 0.2
 		t.linear.y = 0
@@ -74,9 +81,9 @@ class Wallfollow:
 			self.pub.publish(t)	
 
 	def start(self):
-		self.wall_dist_away = .3
-		self.wall_dist_near = .1
-		self.opp_wall_dist_near = .2
+		self.wall_dist_away = .4
+		self.wall_dist_near = .15
+		self.opp_wall_dist_near = .3
 		self.pub = rospy.Publisher(self.pub_topic_name, Twist, queue_size=10)
 		rospy.Subscriber(self.scan_topic_name,LaserScan,self.scanCallback)
 		rospy.spin()
