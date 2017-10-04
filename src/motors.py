@@ -32,13 +32,21 @@ class Motors:
 
 		self.lineFollowContinue = False
 
+		#decide if we ignore commands so we can finish turns
+		self.busy = False
+
 		rospy.spin()
+
+
 
 
 	def command_call_back(self, x):
 		n = x.data
 		print("running command callback, command is " + str(x))
 		self.lineFollowContinue = (0 == x)
+		if(self.busy):
+			print("go away, I'm busy")
+			return
 		print("i'm getting to the psuedo-switch statement")
 		if(1 == n):
 			print("running case 1")
@@ -57,6 +65,8 @@ class Motors:
 
 
 	def turnLeft(self):
+		self.busy = True
+		self.goForward()
 		self.twist.linear.x = 0
 		self.twist.angular.z = pi / 2
 		self.pub.publish(self.twist)
@@ -64,8 +74,13 @@ class Motors:
 		self.twist.linear.x = 0
 		self.twist.angular.z = 0
 		self.pub.publish(self.twist)
+		self.goForward()
+		self.busy = False
+
 
 	def turnRight(self):
+		self.busy = True
+		self.goForward()
 		self.twist.linear.x = 0
 		self.twist.angular.z = -1*pi / 2
 		self.pub.publish(self.twist)
@@ -73,6 +88,8 @@ class Motors:
 		self.twist.linear.x = 0
 		self.twist.angular.z = 0
 		self.pub.publish(self.twist)
+		self.goForward()
+		self.busy = False
 
 	def goForward(self):
 		self.twist.linear.x = 0.2
@@ -80,7 +97,7 @@ class Motors:
 		self.pub.publish(self.twist)
 		self.twist.linear.x = 0
 		self.twist.angular.z = 0
-		sleep(5)
+		sleep(1.8)
 		self.pub.publish(self.twist)
 
 	def lineFollow(self):
@@ -110,6 +127,7 @@ class Motors:
 
 def main():
 	m = Motors()
+
 
 
 if __name__ == '__main__':

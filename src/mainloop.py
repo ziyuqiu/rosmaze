@@ -40,7 +40,7 @@ class Mainloop:
 		self.pub = rospy.Publisher('instruction', Int32, queue_size = 10)
 		self.side = 0.32 #one side of width is 32 cm
 		self.miss = self.side/5 #allowed error range
-		self.range = 0.6
+		self.range = 1.0
 
 		rospy.spin()
 			
