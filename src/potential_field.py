@@ -12,11 +12,12 @@ class PField:
 		#make publisher
 		self.pub = rospy.Publisher("/robot0/cmd_vel", Twist, queue_size=10)
 		rospy.init_node('potential_field')
-		self.ranges = [0]*360
 
 	def command_vehicle(self):
-		angle = self.maxima_angle(self.filter(self.ranges))
-		Kp = 1.0/100.0
+		angle = self.pick_direction(
+			self.find_peaks(
+				self.ranges))
+		Kp = 0.01
 		angular_vel = -Kp*(angle-180)
 		t = Twist()
 		t.linear.x = 0.2
@@ -27,8 +28,23 @@ class PField:
 		t.angular.z = angular_vel
 		self.pub.publish(t)
 
-	def maxima_angle(self,input):
+	def pick_direction(self, peaks):
+		return peaks[len(peaks)-1]
+
+
+	def find_peaks(self,input):
 		i = 3 * len(input) / 4
+		peaks = []
+		while(i>len(input)/4):
+			i = self.maxima_angle(input, i)
+			peaks.append(i)
+		return peaks
+
+
+
+
+	def maxima_angle(self,input,i):
+		#i = 3 * len(input) / 4
 		min_diff = 0.004
 		#find the rightmost minima
 		#print(input[i-(len(input)/20):i+(len(input)/20)])
@@ -40,12 +56,11 @@ class PField:
 			i = i - 1
 		print("angle is " + str(i))
 		print("range is " + str(input[i]))
+		#return angle
 		return i;
 
 	#moving average function
 	def filter(self,input):
-		return input
-
 		output = [0] * len(input)
 		smoothing_range = 10;
 		i = smoothing_range
