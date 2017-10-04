@@ -20,7 +20,7 @@ class Mainloop:
 	def evaluateIntersection(self,front,left,right):	
 		if (right >= self.range):
 			print("Right opening exists.")
-			if (front >= self.range and left >= self.range):
+			if (front >= self.out_range and left >= self.out_range):
 				print("WOW! I'm out")
 				self.pub.publish(4) #out	
 			else:
@@ -47,6 +47,7 @@ class Mainloop:
 		self.side = 0.32 #one side of width is 32 cm
 		self.miss = self.side/5 #allowed error range
 		self.range = 0.8
+		self.out_range = 2
 
 		rospy.spin()
 			
