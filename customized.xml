@@ -49,22 +49,7 @@
         </noise>
       </sonar_specifications>
     </sonar>
-    <sonar>
-      <sonar_specifications>
-        <cone_angle>0.52333</cone_angle>
-        <max_range>20</max_range>
-        <min_range>0.15</min_range>
-        <frequency>10</frequency>
-        <pose>
-          <x>0</x>
-          <y>0</y>
-          <theta>-3.14</theta>
-        </pose>
-        <noise>
-          <filename>noises/noise_gauss.xml</filename>
-        </noise>
-      </sonar_specifications>
-    </sonar>
+
     <sonar>
       <sonar_specifications>
         <cone_angle>0.34889</cone_angle>
