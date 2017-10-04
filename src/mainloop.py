@@ -19,15 +19,21 @@ class Mainloop:
 	
 	def evaluateIntersection(self,front,left,right):	
 		if (right >= self.range):
+			print("Right opening exists.")
 			if (front >= self.range and left >= self.range):
+				print("WOW! I'm out")
 				self.pub.publish(4) #out	
 			else:
+				print("Turning right...")
 				self.pub.publish(2) #rightturn
 		elif (front >= self.range):
+			print("Front opening exists.")
 			self.pub.publish(0) #straight
 		elif (left >= self.range):
+			print("Turning left...")
 			self.pub.publish(1) #leftturn
 		else:
+			print("Dead end. Uturning...")
 			self.pub.publish(3) #uturn
 
 	def start(self):
@@ -40,7 +46,7 @@ class Mainloop:
 		self.pub = rospy.Publisher('instruction', Int32, queue_size = 10)
 		self.side = 0.32 #one side of width is 32 cm
 		self.miss = self.side/5 #allowed error range
-		self.range = 1.0
+		self.range = 0.8
 
 		rospy.spin()
 			
