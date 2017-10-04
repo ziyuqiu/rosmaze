@@ -9,8 +9,23 @@ from time import sleep
 class PField:
 	def __init__(self):
 		self.sub = rospy.Subscriber("/robot0/laser_0",LaserScan,self.callback)
+		#make publisher
+		self.pub = rospy.Publisher("/robot0/cmd_vel", Twist, queue_size=10)
 		rospy.init_node('potential_field')
 		self.ranges = [0]*360
+
+	def command_vehicle(self):
+		angle = self.maxima_angle(self.filter(self.ranges))
+		Kp = 1.0/100.0
+		angular_vel = -Kp*(angle-180)
+		t = Twist()
+		t.linear.x = 0.2
+		t.linear.y = 0
+		t.linear.z = 0
+		t.angular.x = 0
+		t.angular.y = 0
+		t.angular.z = angular_vel
+		self.pub.publish(t)
 
 	def maxima_angle(self,input):
 		i = 3 * len(input) / 4
@@ -23,12 +38,14 @@ class PField:
 		#find the element that is less than the one before it
 		while(input[i] + min_diff > input[i+1]):
 			i = i - 1
+		print("angle is " + str(i))
+		print("range is " + str(input[i]))
 		return i;
 
 	#moving average function
 	def filter(self,input):
 		return input
-		
+
 		output = [0] * len(input)
 		smoothing_range = 10;
 		i = smoothing_range
@@ -46,9 +63,10 @@ class PField:
 
 def main():
 	p = PField()
+	sleep(2)
 	while(True):
-		sleep(2)
-		print(p.maxima_angle(p.filter(p.ranges)))
+		p.command_vehicle()
+		sleep(.01)
 
 	
 
