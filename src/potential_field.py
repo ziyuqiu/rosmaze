@@ -16,7 +16,9 @@ class PField:
 	def command_vehicle(self):
 		angle = self.pick_direction(
 			self.find_peaks(
-				self.ranges))
+				self.filter(
+					self.ranges)))
+		print("going in direction " + str(angle))
 		Kp = 0.01
 		angular_vel = -Kp*(angle-180)
 		t = Twist()
@@ -29,7 +31,13 @@ class PField:
 		self.pub.publish(t)
 
 	def pick_direction(self, peaks):
-		return peaks[len(peaks)-1]
+		r = 0
+		internal_ranges = self.ranges
+		for i in peaks:
+			if(internal_ranges[r] < internal_ranges[i]):
+				r = i
+
+		return r
 
 
 	def find_peaks(self,input):
@@ -45,7 +53,7 @@ class PField:
 
 	def maxima_angle(self,input,i):
 		#i = 3 * len(input) / 4
-		min_diff = 0.004
+		min_diff = 0.0004
 		#find the rightmost minima
 		#print(input[i-(len(input)/20):i+(len(input)/20)])
 		while(input[i] < input[i+1] + min_diff):
@@ -61,6 +69,8 @@ class PField:
 
 	#moving average function
 	def filter(self,input):
+		print("before smoothing")
+		print(str(input))
 		output = [0] * len(input)
 		smoothing_range = 10;
 		i = smoothing_range
@@ -68,6 +78,8 @@ class PField:
 			#average
 			output[i] = sum(input[i - smoothing_range:i + smoothing_range])/len(input[i - smoothing_range:i + smoothing_range])
 			i = i + 1
+		print("after smoothing")
+		print(str(output))
 		return output
 		
 
