@@ -54,8 +54,7 @@ class Motors:
 		elif(2==n):
 			self.turnRight()
 		elif(3==n):
-			self.turnLeft()
-			self.turnLeft()
+			self.uTurn()
 		elif(4==n):
 			self.turnLeft()
 			self.turnRight()
@@ -76,6 +75,18 @@ class Motors:
 		self.pub.publish(self.twist)
 		self.goForward()
 		self.busy = False
+
+	def uTurn(self):
+		self.busy = True
+		self.twist.linear.x = 0
+		self.twist.angular.z = pi / 2
+		self.pub.publish(self.twist)
+		sleep(2)
+		self.twist.linear.x = 0
+		self.twist.angular.z = 0
+		self.pub.publish(self.twist)
+		self.busy = False
+
 
 
 	def turnRight(self):
