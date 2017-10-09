@@ -15,25 +15,31 @@ class Mainloop:
 		if (left>=self.range or right >=self.range or front<= self.side):
 			self.evaluateIntersection(front,left,right)
 		else:
-			self.pub.publish(0)
+			if (self.last != 0):
+				self.pub.publish(0)
 	
 	def evaluateIntersection(self,front,left,right):	
 		if (right >= self.range):
 			print("Right opening exists.")
 			if (front >= self.out_range and left >= self.out_range):
 				print("WOW! I'm out")
+				self.last = 4
 				self.pub.publish(4) #out	
 			else:
 				print("Turning right...")
+				self.last = 2
 				self.pub.publish(2) #rightturn
 		elif (front >= self.range):
 			print("Front opening exists.")
+			self.last = 0
 			self.pub.publish(0) #straight
 		elif (left >= self.range):
 			print("Turning left...")
+			self.last = 1
 			self.pub.publish(1) #leftturn
 		else:
 			print("Dead end. Uturning...")
+			self.last = 3
 			self.pub.publish(3) #uturn
 
 	def start(self):
@@ -48,6 +54,7 @@ class Mainloop:
 		self.miss = self.side/5 #allowed error range
 		self.range = 0.8
 		self.out_range = 2
+		self.last = 5
 
 		rospy.spin()
 			
